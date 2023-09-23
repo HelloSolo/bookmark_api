@@ -9,6 +9,7 @@ python-dotenv = "*"
 flask-sqlalchemy = "*"
 python-usernames = "*"
 validators = "*"
+flask-jwt-extended = "*"
 
 [dev-packages]
 
