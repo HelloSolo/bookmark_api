@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from python_usernames import is_safe_username
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_jwt_extended import create_access_token, create_refresh_token
 import validators
 from .constants import http_status_codes
 from .utils import passwordValidator
@@ -61,6 +62,36 @@ def register():
             {"message": "user created", "user": {"username": username, "email": email}}
         ),
         http_status_codes.HTTP_201_CREATED,
+    )
+
+
+@auth.post("/login")
+def login():
+    email = request.json.get("email", "")
+    pwd = request.json.get("password", "")
+
+    user = User.query.filter_by(email=email).first()
+
+    if user:
+        pwd_is_correct = check_password_hash(pwhash=user.password, password=pwd)
+
+        if pwd_is_correct:
+            access_token = create_access_token(identity=user.id)
+            refresh_token = create_refresh_token(identity=user.id)
+
+            return (
+                jsonify(
+                    {
+                        "token": {"access": access_token, "refresh": refresh_token},
+                        "user": {"username": user.username, "email": user.email},
+                    }
+                ),
+                http_status_codes.HTTP_200_OK,
+            )
+
+    return (
+        jsonify({"message": "Invalid Credentials"}),
+        http_status_codes.HTTP_401_UNAUTHORIZED,
     )
 
 
