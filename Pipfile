@@ -7,6 +7,8 @@ name = "pypi"
 flask = "*"
 python-dotenv = "*"
 flask-sqlalchemy = "*"
+python-usernames = "*"
+validators = "*"
 
 [dev-packages]
 
