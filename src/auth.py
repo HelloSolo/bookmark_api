@@ -1,7 +1,12 @@
 from flask import Blueprint, request, jsonify
 from python_usernames import is_safe_username
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import create_access_token, create_refresh_token
+from flask_jwt_extended import (
+    create_access_token,
+    create_refresh_token,
+    jwt_required,
+    get_jwt_identity,
+)
 import validators
 from .constants import http_status_codes
 from .utils import passwordValidator
@@ -96,5 +101,21 @@ def login():
 
 
 @auth.get("/me")
+@jwt_required()
 def me():
-    return {"user": "me"}
+    user_id = get_jwt_identity()
+    user = User.query.filter_by(id=user_id).first()
+
+    return (
+        jsonify({"user": {"username": user.username, "email": user.email}}),
+        http_status_codes.HTTP_200_OK,
+    )
+
+
+@auth.get("/token/refresh")
+@jwt_required(refresh=True)
+def refresh_access_token():
+    user_id = get_jwt_identity()
+    access_token = create_access_token(identity=user_id)
+
+    return jsonify({"access": access_token}), http_status_codes.HTTP_200_OK
