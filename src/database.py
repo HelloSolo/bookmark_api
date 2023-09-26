@@ -29,11 +29,8 @@ class Bookmark(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.now())
     updated_at = db.Column(db.DateTime, onupdate=datetime.now())
 
-    def __repr__(self) -> str:
-        return f"bookmark>>>{self.url}"
-
     def generate_short_character(self):
-        picked_char = "".join(random.choices(string.digits + string.ascii_letters), k=3)
+        picked_char = "".join(random.choices(string.digits + string.ascii_letters, k=3))
         link = self.query.filter_by(short_url=picked_char).first()
 
         if link:
@@ -42,5 +39,8 @@ class Bookmark(db.Model):
             return picked_char
 
     def __init__(self, **kwargs) -> None:
-        super().__init__()
+        super().__init__(**kwargs)
         self.short_url = self.generate_short_character()
+
+    def __repr__(self) -> str:
+        return f"bookmark>>>{self.url}"
