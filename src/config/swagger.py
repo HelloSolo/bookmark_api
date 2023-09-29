@@ -12,7 +12,7 @@ template = {
         "termsOfService": "www.twitter.com/deve",
         "version": "1.0",
     },
-    "basePath": "/api/v1",  # base bash for blueprint registration
+    # "basePath": "/api/v1",  # base bash for blueprint registration
     "schemes": ["http", "https"],
     "securityDefinitions": {
         "Bearer": {
