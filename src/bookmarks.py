@@ -48,11 +48,16 @@ def handle_bookmarks():
         )
 
     else:
-        bookmarks = Bookmark.query.filter_by(user_id=current_user)
+        page = request.args.get("page", 1, type=int)
+        per_page = request.args.get("per_page", 5, type=int)
+
+        bookmarks = Bookmark.query.filter_by(user_id=current_user).paginate(
+            page=page, per_page=per_page
+        )
 
         data = []
 
-        for bookmark in bookmarks:
+        for bookmark in bookmarks.items:
             data.append(
                 {
                     "id": bookmark.id,
@@ -65,7 +70,17 @@ def handle_bookmarks():
                 }
             )
 
+        meta = {
+            "page": bookmarks.page,
+            "pages": bookmarks.pages,
+            "total_count": bookmarks.total,
+            "prev_page": bookmarks.prev_num,
+            "next_page": bookmarks.has_next,
+            "has_next": bookmarks.has_next,
+            "prev_next": bookmarks.has_prev,
+        }
+
         return (
-            jsonify({"data": data}),
+            jsonify({"data": data, "meta": meta}),
             http_status_codes.HTTP_200_OK,
         )
