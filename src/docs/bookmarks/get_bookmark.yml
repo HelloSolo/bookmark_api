@@ -1,0 +1,22 @@
+GET stats about bookmarks
+---
+tags:
+   - Bookmarks
+
+parameters:
+   - in: path
+     name: id
+     schema:
+        type: integer
+     required: true
+     description: Numeric ID of the bookmark to get
+
+security:
+   - Bearer: []
+
+responses:
+   200:
+      description: single bookmark item
+
+   404:
+      description: Bookmark item not found
