@@ -84,3 +84,66 @@ def handle_bookmarks():
             jsonify({"data": data, "meta": meta}),
             http_status_codes.HTTP_200_OK,
         )
+
+
+@bookmarks.get("/<int:id>")
+@jwt_required()
+def get_bookmark(id):
+    current_user = get_jwt_identity()
+    bookmark = Bookmark.query.filter_by(user_id=current_user, id=id).first_or_404(
+        "Item not found"
+    )
+
+    return (
+        jsonify(
+            {
+                "id": bookmark.id,
+                "url": bookmark.url,
+                "short_url": bookmark.short_url,
+                "body": bookmark.body,
+                "visits": bookmark.visits,
+                "created_at": bookmark.created_at,
+                "updated_at": bookmark.updated_at,
+            }
+        ),
+        http_status_codes.HTTP_200_OK,
+    )
+
+
+@bookmarks.patch("/<int:id>")
+@jwt_required()
+def edit_bookmark(id):
+    current_user = get_jwt_identity()
+
+    bookmark: Bookmark = Bookmark.query.filter_by(
+        user_id=current_user, id=id
+    ).first_or_404("Item not found")
+
+    url = request.get_json().get("url", bookmark.url)
+    body = request.get_json().get("body", bookmark.body)
+
+    if not validators.url(url):
+        return (
+            jsonify({"message": "invalid url"}),
+            http_status_codes.HTTP_400_BAD_REQUEST,
+        )
+
+    bookmark.url = url
+    bookmark.body = body
+
+    db.session.commit()
+
+    return (
+        jsonify(
+            {
+                "id": bookmark.id,
+                "url": bookmark.url,
+                "short_url": bookmark.short_url,
+                "body": bookmark.body,
+                "visits": bookmark.visits,
+                "created_at": bookmark.created_at,
+                "updated_at": bookmark.updated_at,
+            }
+        ),
+        http_status_codes.HTTP_200_OK,
+    )
