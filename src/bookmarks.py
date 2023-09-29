@@ -53,7 +53,7 @@ def handle_bookmarks():
 
         bookmarks = Bookmark.query.filter_by(user_id=current_user).paginate(
             page=page, per_page=per_page
-        )
+        )  # The data fetched from the response is an object so we still need to extract the data
 
         data = []
 
@@ -163,3 +163,25 @@ def delete_bookmark(id):
     db.session.commit()
 
     return jsonify({"message": "item deleted"}), http_status_codes.HTTP_204_NO_CONTENT
+
+
+@bookmarks.get("/stats")
+@jwt_required()
+def get_stats():
+    current_user = get_jwt_identity()
+
+    bookmarks: Bookmark = Bookmark.query.filter_by(user_id=current_user).all()
+
+    data = []
+
+    for bookmark in bookmarks:
+        data.append(
+            {
+                "visits": bookmark.visits,
+                "url": bookmark.url,
+                "short_url": bookmark.short_url,
+                "id": bookmark.id,
+            }
+        )
+
+    return jsonify({"data": data}), http_status_codes.HTTP_200_OK
