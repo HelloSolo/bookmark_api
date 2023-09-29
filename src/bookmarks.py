@@ -110,6 +110,7 @@ def get_bookmark(id):
     )
 
 
+@bookmarks.put("/<int:id>")
 @bookmarks.patch("/<int:id>")
 @jwt_required()
 def edit_bookmark(id):
