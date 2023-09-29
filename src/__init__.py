@@ -1,9 +1,9 @@
 import os
-from flask import Flask
+from flask import Flask, redirect
 from flask_jwt_extended import JWTManager
 from src.auth import auth
 from src.bookmarks import bookmarks
-from src.database import db
+from src.database import db, Bookmark
 
 
 def create_app(test_config=None):
@@ -18,19 +18,23 @@ def create_app(test_config=None):
     else:
         app.config.from_mapping(test_config)
 
-    @app.get("/")
-    def index():
-        return "Hello Word"
-
-    @app.get("/hello")
-    def say_hello():
-        return {"message": "Hello World"}
-
     db.app = app
     db.init_app(app)
 
     JWTManager(app)
     app.register_blueprint(auth)
     app.register_blueprint(bookmarks)
+
+    @app.get("/<short_url>")
+    def redirect_short_url_to_url(short_url):
+        bookmark: Bookmark = Bookmark.query.filter_by(short_url=short_url).first_or_404(
+            "Item not found"
+        )
+
+        bookmark.visits += 1
+
+        db.session.commit()
+
+        return redirect(bookmark.url)
 
     return app
