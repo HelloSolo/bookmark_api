@@ -147,3 +147,18 @@ def edit_bookmark(id):
         ),
         http_status_codes.HTTP_200_OK,
     )
+
+
+@bookmarks.delete("/<int:id>")
+@jwt_required()
+def delete_bookmark(id):
+    current_user = get_jwt_identity()
+
+    bookmark: Bookmark = Bookmark.query.filter_by(
+        user_id=current_user, id=id
+    ).first_or_404("Item not found")
+
+    db.session.delete(bookmark)
+    db.session.commit()
+
+    return jsonify({"message": "item deleted"}), http_status_codes.HTTP_204_NO_CONTENT
