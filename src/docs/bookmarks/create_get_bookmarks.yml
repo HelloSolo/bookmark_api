@@ -1,0 +1,50 @@
+tags:
+   - Bookmarks
+
+post:
+   parameters:
+      - name: body
+        description: The body should contain information about the bookmark
+        in: body
+        required: true
+        schema:
+           type: object
+           required:
+              - "url"
+              - "body"
+           properties:
+              url:
+                 type: "string"
+                 example: "https://www.google.com"
+              body:
+                 type: "string"
+                 example: "A simple url"
+
+get:
+   parameters:
+      - in: query
+        name: page
+        schema:
+           type: integer
+        description: The page number to return
+      - in: query
+        name: per_page
+        schema:
+           type: integer
+        description: The numbers of items to return
+
+security:
+   - Bearer: []
+
+responses:
+   200:
+      description: bookmarks retrived
+
+   201:
+      description: bookmark created
+
+   409:
+      description: url is already bookmarked
+
+   400:
+      description: invalid parameter

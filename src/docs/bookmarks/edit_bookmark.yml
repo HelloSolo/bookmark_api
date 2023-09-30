@@ -1,0 +1,41 @@
+Update a bookmark
+---
+tags:
+   - Bookmarks
+
+parameters:
+   - in: path
+     name: id
+     schema:
+        type: integer
+     required: true
+     description: Numeric ID of the bookmark to be editted
+   - name: body
+     description: The body should contain updated info for the bookmark
+     in: body
+     required: true
+     schema:
+        type: object
+        required:
+           - "url"
+           - "body"
+        properties:
+           url:
+              type: "string"
+              example: "https://www.google.com"
+           body:
+              type: "string"
+              example: "A simple url"
+
+security:
+   - Bearer: []
+
+responses:
+   200:
+      description: single bookmark item
+
+   404:
+      description: Bookmark item not found
+
+   400:
+      description: invalid parameter

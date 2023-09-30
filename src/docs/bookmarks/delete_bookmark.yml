@@ -1,4 +1,4 @@
-GET a single bookmark
+DELETE a bookmark
 ---
 tags:
    - Bookmarks
@@ -15,8 +15,8 @@ security:
    - Bearer: []
 
 responses:
-   200:
-      description: single bookmark item
+   204:
+      description: bookmark item has been deleted
 
    404:
       description: Bookmark item not found
