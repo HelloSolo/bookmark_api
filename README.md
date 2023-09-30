@@ -1,4 +1,4 @@
-# bookmark_api
+# Bookmark_api
 An api for bookmarking websites
 
 ## Installation Steps
